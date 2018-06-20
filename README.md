@@ -11,7 +11,7 @@ Getting Started
 
 Herramientas utilizadas:
 
-# Git (http://maven.apache.org/).
+# Git (https://github.com).
 
 # Especificacion Abstracta de Modelos DEVS (CML-DEVS). Tesis de Diego Ariel Hollmann
 

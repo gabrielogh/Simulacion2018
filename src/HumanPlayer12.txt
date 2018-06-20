@@ -1,0 +1,33 @@
+atomic HumanPlayer12 = <X, Y, S, δint, δext, λ, ta> where
+
+  X is //Enemy winner Weight
+  	in: void
+  end X
+
+  Y is //Weight of the box to drop.
+  	out: ℝ+ U {0}
+  end Y
+
+  S is   //(List(Weight, interArrive), drop, strategy, timeOut) //List Order by <=
+  	(List((ℝ+ U {0}) x (R+ U {0}))) x (ℝ+ U {0}) x {1, 2} x Time;
+  end S
+
+  //-------------------
+  ta(ws, box, stg, σ) is 
+  	σ
+  end ta
+
+  //-------------------
+  λ(ws, box, stg, σ) is
+  	box
+  end λ
+
+  //-------------------
+  δint(ws, box, stg, σ) is
+    defcases
+      case S= ((tail ws), (head ws).fst(), stg, (head ws).snd()); if(stg = 1)
+      case S= ((tail ws), (last ws).fst(), stg, (last ws).snd()); if(stg = 2)
+    end defcases
+  end δint
+
+end atomic

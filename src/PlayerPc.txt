@@ -1,0 +1,30 @@
+atomic PlayerPc = <X, Y, S, δint, δext, λ, ta> where
+
+  X is //Empty inputs
+  	in: void
+  end X
+
+  Y is //Weight of the box to drop.
+  	out: ℝ+ U {0}
+  end Y
+
+  S is   //(List(Weight, interArrive), drop, timeOut) //List Order by <=
+  	(List((ℝ+ U {0}) x (ℝ+ U {0}))) x (ℝ+ U {0}) x {1, 2} x (ℝ+ U {0});
+  end S
+
+  //-------------------
+  ta(ws, box, stg, σ) is 
+  	σ
+  end ta
+
+  //-------------------
+  λ(ws, box, stg, σ) is
+  	box
+  end λ
+
+  //-------------------
+  δint(ws, box, stg, σ) is
+    S= ((tail ws), (head ws).fst(), stg, (head ws).snd());
+  end δint
+
+end atomic

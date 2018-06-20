@@ -1,0 +1,55 @@
+atomic HumanPlayer34 = <X, Y, S, δint, δext, λ, ta> where
+
+  X is //Outputs of the Cinta Dev.
+  	in: {"LlegoIzq", "LlegoDer"} U ({"GanoIzq", "GanoDer", "Empate"} x (ℝ+ U {0}) x (ℝ+ U {0}))
+  end X
+
+  Y is //Weight of the box to drop.
+  	out: ℝ+ U {0}
+  end Y
+
+  S is   //(List(Weight, interArrive), drop, strategy, timeOut) //List Order by <=, represents the data file.
+  	(List((ℝ+ U {0}) x (ℝ+ U {0}))) x (ℝ+ U {0}) x {3, 4} x (ℝ+ U {0});
+  end S
+
+
+  //-------------------
+  δext((ws, box, stg, σ), e, (msg, pv, pto)) is 
+    defcases
+      case S=((tail sw),  (head ws).fst(), stg, 0); if(msg = "LlegoIzq")
+      case S= ((tail ws), Lib.dropFirstBiggestThan(ws, pv).fst(), stg, 0); if(stg = 3)
+      case S= ((front ws), (last ws).fst(), stg, 0); if(stg = 4)
+     end defcases
+  end δext
+
+  //-------------------
+  ta(ws, box, stg, σ) is 
+  	σ
+  end ta
+
+  //-------------------
+  λ(ws, box, stg, σ) is
+  	box
+  end λ
+
+  //-------------------
+  δint(ws, box, stg, σ) is
+    defcases
+      case S= (ws, box, stg, inf); if(stg = 3)
+      case S= (ws, box, stg, inf); if(stg = 4)
+    end defcases
+  end δint
+
+
+  functions Lib is
+    
+    //Function that find the first box that his weight is bigger than the adversary box weight.
+    function dropFirstBiggestThan(ws, p) is
+      List ws, ℝ p -> box : ℝ
+      foreach t in ws
+          case box = t.snd(); break; if(t.snd() > p)   
+      end foreach
+    end function
+
+  end functions
+end atomic

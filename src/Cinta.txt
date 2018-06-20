@@ -1,0 +1,89 @@
+atomic cinta = <X, Y, S, δint, δext, λ, ta> where
+
+  params is
+    vc
+  end params
+  X is
+    in:{0,1} x (ℝ+ U {0})
+  end X
+  
+  Y is
+    out: {LlegoIzq, LlegoDer} ∪ ({Ganoizq, GanoDer, Empate}, ℝ+ U {0}, ℝ+ U {0})
+  end y
+  
+  S is // (ListL(wight, dist), ListR(weight, dist), drop, timeToCrash)
+    s:((List((ℝ+ U {0}) x (ℝ+ U {0}))), (List((ℝ+ U {0}) x (ℝ+ U {0}))), Time)
+  end S
+  
+  δext((Ls,Rs,σ), e, (p, v)) is //Ls: ListLeft, Rs:ListRight
+    defcases
+      case S= (Lib.add(Lib.update(Ls, e), (p, 0)), Lib.update(Rs, e), Lib.rec(Ls, Rs, e)); if (v = 0)
+      case S= (Lib.update(Ls, e), Lib.add(Lib.update(Rs, e), (p, 0)), Lib.rec(Ls, Rs, e)); if (v = 1)
+    end defcases
+  end δext
+
+  ta(Ls,Rs,σ) is
+    σ
+  end ta
+
+  λ(Ls,Rs,σ) is
+    defcases
+      case S= ("LlegoDer"); if (Ls.size() == 0)
+      case S= ("LlegoIzq"); if (Rs.size() == 0)
+      case S= ("GanoIzq", Lib.mostrarPNuevo(head Ls, head Rs), (head ls).snd()); if (Lib.winner(Ls,Rs))
+      case S= ("GanoDer", Lib.mostrarPNuevo(head Rs, head Ls), ((head Rs).snd())); if (Lib.winner(Rs,Ls))
+      case S= ("Empate", 0, (head ls).snd()); if (¬(Lib.winner(Rs,Ls)) ∧ ¬(Lib.winner(Ls,Rs)))
+    end defcases
+  end λ
+  
+  δint(Ls,Rs,σ) is
+    defcases
+      case S=(Ls, tail Rs, Lib.rec(Ls,Rs, 0)); if (Ls.size() == 0)
+      case S=(tail Ls, Rs, Lib.rec(Ls,Rs, 0)); if (Rs.size() == 0)
+      case S=(tail Ls, Lib.updateFirst(Ls, head Rs), Lib.rec(tail Ls, Rs, 0)); if (Lib.winner(Rs,Ls)) //Gano Der
+      case S=(Lib.updateFirst(Ls, head rS), tail Rs, Lib.rec(Ls, tail Rs, 0)); if (Lib.winner(Ls,Rs)) //Gano Izq
+      case S=(tail Ls, tail Rs, Lib.rec(tail Ls, tail Rs, 0)); if (¬(Lib.winner(Rs,Ls)) ∧ ¬(Lib.winner(Ls,Rs))) //Empate
+    end defcases
+  end δint
+
+  functions Lib is
+    
+    //Put an element in the tail of the List (FiFo)
+    function add(ws, x ) is
+      ws.push(x) 
+    end function
+
+    //Function that update the distance traveled of all box in a list.
+    function update(ws, e) is
+      foreach t in ws
+          t.d = t.snd() + e*vc    
+      end foreach
+    end function
+    
+    //Function that updates the weight of the winner.
+    function updateFirst(ws, (p,d))
+      ws.fst().fst() = (head ws).fst() * ((p*d) / ((head ws).fst() * (head ws).snd()))
+    end function
+
+    //Function that recalculate the time to crash or leave the Cinta
+    function rec(Ls, Rs, e) is
+      ls : List, Rs: List -> t: Time
+      defcase
+        if (¬(Ls.size() = 0) ∧ ¬(Rs.size() = 0)) ⇒ t = (l - (Ls.fst().snd() + e*vc) - (Rs.fst().snd() + e*vc)) \ 2*vc  
+        if (¬(Ls.size = 0) ∧ (Rs.size() = 0)) ⇒ t = (l - (Ls.fst().snd() + e*vc)) \ 2*vc
+        if ((Ls.size() = 0) ∧ ¬(Rs.size() = 0)) ⇒ t = (l- (Rs.fst().snd() + e*vc)) \ vc 
+        if ((Ls.size() = 0) ∧ (Rs.size() = 0)) ⇒ t = inf
+      end defcase
+    end function
+    
+    //Check if the first of Ls list is the winner
+    function winner(Ls, Rs)
+      ls : List, Rs: List -> b: Boolean
+      defcases 
+        case b = true if (Rs.fst().fst() * Rs.fst().snd() > Ls.fst().fst() * Ls.fst().snd())
+        case b = false if (Ls.fst().fst() * Ls.fst().snd() > Rs.fst().fst() * Rs.fst().snd())
+      end clases
+    end function
+
+  end functions
+end atomic
